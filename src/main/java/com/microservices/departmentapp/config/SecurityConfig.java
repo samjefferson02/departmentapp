@@ -3,6 +3,7 @@ package com.microservices.departmentapp.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -18,18 +19,18 @@ public class SecurityConfig
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
 
         http
-                // Allow Swagger endpoints
+                .csrf(csrf -> csrf.disable()) // disable CSRF for Postman
                 .authorizeHttpRequests(auth -> auth
+                        // Swagger endpoints
                         .requestMatchers(
                                 "/v3/api-docs/**",
                                 "/swagger-ui/**",
                                 "/swagger-ui.html"
                         ).permitAll()
-                        // All other endpoints require authentication
+                        // all other endpoints require authentication
                         .anyRequest().authenticated()
                 )
-                // Disable CSRF for simplicity (optional, depends on your app)
-                .csrf(csrf -> csrf.disable());
+                .httpBasic(Customizer.withDefaults()); // basic auth
 
         return http.build();
     }
